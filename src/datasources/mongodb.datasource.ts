@@ -4,11 +4,11 @@ import {juggler} from '@loopback/repository';
 const config = {
   name: 'mongodb',
   connector: 'mongodb',
-  url: 'mongodb+srv://user-segurity:YoepqMR0Bjta7YGp@clusterdealership.f2qy7.mongodb.net/?retryWrites=true&w=majority',
+  url: 'mongodb+srv://calentamiento_api_user:Y0WgIp4fwvnKT5Ud@clusterdealership.f2qy7.mongodb.net/SeguridadEleccionesBD?retryWrites=true&w=majority',
   host: 'localhost',
   port: 27017,
-  user: 'user-segurity',
-  password: 'YoepqMR0Bjta7YGp',
+  user: 'calentamiento_api_user',
+  password: 'Y0WgIp4fwvnKT5Ud',
   database: 'SeguridadEleccionesBD',
   useNewUrlParser: true
 };

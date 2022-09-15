@@ -37,9 +37,8 @@ export class Usuario extends Entity {
 
   @property({
     type: 'string',
-    required: true,
   })
-  Clave: string;
+  Clave?: string;
 
   @belongsTo(() => Rol)
   rolId: string;

@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -16,14 +17,19 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
-import {Usuario} from '../models';
+import {CredencialesLogin, Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
+import {SeguridadUsuarioService} from '../services';
+
 
 export class UsuarioController {
   constructor(
     @repository(UsuarioRepository)
     public usuarioRepository : UsuarioRepository,
+    @service(SeguridadUsuarioService)
+    private seguridad: SeguridadUsuarioService
   ) {}
 
   @post('/usuarios')
@@ -44,6 +50,10 @@ export class UsuarioController {
     })
     usuario: Omit<Usuario, '_id'>,
   ): Promise<Usuario> {
+    let contraseñaGenerada = this.seguridad.generarClaveAleatoria();
+    let contraseñaCifrada = this.seguridad.cifrarClave(contraseñaGenerada);
+    usuario.Clave = contraseñaCifrada;
+    //notificar al usuario enviando la contraseña generada y usuario
     return this.usuarioRepository.create(usuario);
   }
 
@@ -147,4 +157,35 @@ export class UsuarioController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.usuarioRepository.deleteById(id);
   }
+
+
+/**
+ * El bloque de metodos personalizados para la seguridad del usuario
+ */
+
+ @post('/login')
+ @response(200, {
+   description: 'Identificacion de usuario',
+   content: {'application/json': {schema: getModelSchemaRef(CredencialesLogin)}},
+ })
+ async identificar(
+   @requestBody({
+     content: {
+       'application/json': {
+         schema: getModelSchemaRef(CredencialesLogin,
+          ),
+       },
+     },
+   })
+   credenciales: CredencialesLogin,
+ ): Promise<string> {
+  console.log(credenciales)
+   try{
+    return await this.seguridad.IdentificarUSuario(credenciales);
+   }catch(err){
+    console.log(err)
+    throw new HttpErrors[400](err +" Se he generado un error en la validacion de las"+
+    "credenciales para el usuario "+credenciales.NombreUsuario);
+   }
+ }
 }
